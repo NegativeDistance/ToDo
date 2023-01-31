@@ -14,7 +14,7 @@ public class ListLoader
 {
     public static final String FILENAME = "list_items.dat";
 
-    public static void writeData (ArrayList<String> toDo, Context context)
+    public static void writeData (ArrayList<Task> toDo, Context context)
     {
         try
         {
@@ -28,15 +28,16 @@ public class ListLoader
         }
     }
 
-    public static ArrayList<String> readData (Context context)
+    public static ArrayList<Task> readData (Context context)
     {
-        ArrayList<String> toDo = null;
+        ArrayList<Task> toDo = null;
 
         try
         {
             FileInputStream fis = context.openFileInput(FILENAME);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            toDo = (ArrayList<String>) ois.readObject();
+            toDo = (ArrayList<Task>) ois.readObject();
+            ois.close();
         }
         catch (FileNotFoundException e)
         {

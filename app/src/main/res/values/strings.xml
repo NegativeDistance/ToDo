@@ -4,4 +4,6 @@
     <string name="new_item">New List Item</string>
     <string name="item_to_do">Item To Do</string>
     <string name="edit_button">Edit Button</string>
+    <string name="date_added">Added:\u0020</string>
+    <string name="date_completed">Completed:\u0020</string>
 </resources>

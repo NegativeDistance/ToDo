@@ -12,12 +12,12 @@ import android.widget.EditText;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements RecyclerViewInterface
 {
     EditText editTextAddItem;
     Button buttonAdd;
     RecyclerView recyclerViewToDo;
-    ArrayList<String> arrayToDo = new ArrayList<>();
+    ArrayList<Task> arrayToDo = new ArrayList<>();
     RecyclerViewAdapter adapter;
 
     @Override
@@ -31,18 +31,33 @@ public class MainActivity extends AppCompatActivity
         recyclerViewToDo = findViewById(R.id.recyclerViewToDo);
 
         arrayToDo = ListLoader.readData(this);
-        adapter = new RecyclerViewAdapter(arrayToDo, this);
+        adapter = new RecyclerViewAdapter(arrayToDo, this, this);
 
         recyclerViewToDo.setAdapter(adapter);
         recyclerViewToDo.setLayoutManager(new LinearLayoutManager(this));
 
         buttonAdd.setOnClickListener(view ->
         {
-            String newItem = editTextAddItem.getText().toString();
+            Task newItem = new Task(editTextAddItem.getText().toString());
             arrayToDo.add(newItem);
             editTextAddItem.setText(null);
             ListLoader.writeData(arrayToDo, getApplicationContext());
             adapter.notifyDataSetChanged();
         });
+    }
+
+    @Override
+    public void onItemClick(int position)
+    {
+        if (!arrayToDo.get(position).isComplete())
+        {
+            arrayToDo.get(position).setComplete(true);
+        }
+        else
+        {
+            arrayToDo.get(position).setComplete(false);
+        }
+        ListLoader.writeData(arrayToDo, getApplicationContext());
+        adapter.notifyDataSetChanged();
     }
 }

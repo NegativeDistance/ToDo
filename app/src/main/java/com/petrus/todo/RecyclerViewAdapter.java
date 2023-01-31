@@ -1,6 +1,8 @@
 package com.petrus.todo;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,13 +19,15 @@ import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapter.MyViewHolder>
 {
+    private final RecyclerViewInterface recyclerViewInterface;
     Context context;
-    ArrayList<String> toDoList;
+    ArrayList<Task> toDoList;
 
-    public RecyclerViewAdapter(ArrayList<String> toDoList, Context context)
+    public RecyclerViewAdapter(ArrayList<Task> toDoList, Context context, RecyclerViewInterface recyclerViewInterface)
     {
         this.toDoList = toDoList;
         this.context = context;
+        this.recyclerViewInterface = recyclerViewInterface;
     }
 
     @NonNull
@@ -34,14 +38,36 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
         //Where we inflate the layout (give look to rows)
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.recycler_list_item, parent, false);
-        return new RecyclerViewAdapter.MyViewHolder(view);
+        return new RecyclerViewAdapter.MyViewHolder(view, recyclerViewInterface);
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(@NonNull @NotNull RecyclerViewAdapter.MyViewHolder holder, int position)
     {
+        boolean complete = toDoList.get(position).isComplete();
+        String completed = holder.itemView.getContext().getString(R.string.date_completed);
+
         //assigning values to the views based on item position
-        holder.itemToDo.setText(toDoList.get(position));
+        holder.itemToDo.setText(toDoList.get(position).getDescription());
+        holder.added.setText(toDoList.get(position).getAddDate());
+
+        if (complete)
+        {
+            holder.completed.setText(String.format("%s%s", completed, toDoList.get(position).getFinishDate()));
+            holder.itemToDo.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.itemToDo.setTextColor(Color.parseColor("#7C7C7C"));
+            holder.added.setTextColor(Color.parseColor("#7C7C7C"));
+            holder.checkBox.setChecked(true);
+        }
+        else if (!complete)
+        {
+            holder.completed.setText(null);
+            holder.itemToDo.setPaintFlags(0);
+            holder.itemToDo.setTextColor(Color.parseColor("#FF000000"));
+            holder.added.setTextColor(Color.parseColor("#FF3388DD"));
+            holder.checkBox.setChecked(false);
+        }
     }
 
     @Override
@@ -55,25 +81,33 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
     {
         //Grabbing the views from our recycler_list_item file
 
-        TextView itemToDo;
+        TextView itemToDo, added, completed;
         CheckBox checkBox;
 
-        public MyViewHolder(@NonNull @NotNull View itemView)
+        public MyViewHolder(@NonNull @NotNull View itemView, RecyclerViewInterface recyclerViewInterface)
         {
             super(itemView);
 
             itemToDo = itemView.findViewById(R.id.textViewItemToDo);
             checkBox = itemView.findViewById(R.id.checkBox);
+            added = itemView.findViewById(R.id.textViewAdded);
+            completed = itemView.findViewById(R.id.textViewCompleted);
 
-            checkBox.setOnClickListener(view ->
+            checkBox.setOnClickListener(new View.OnClickListener()
             {
-                if (checkBox.isChecked())
+                @Override
+                public void onClick(View view)
                 {
-                    itemToDo.setPaintFlags(itemToDo.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                }
-                else
-                {
-                    itemToDo.setPaintFlags(itemToDo.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+                    if(recyclerViewInterface != null)
+                    {
+                        int pos = getAdapterPosition();
+
+                        if (pos != RecyclerView.NO_POSITION)
+                        {
+                            itemToDo.setPaintFlags(itemToDo.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                            recyclerViewInterface.onItemClick(pos);
+                        }
+                    }
                 }
             });
         }
