@@ -64,6 +64,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
 
             itemToDo = itemView.findViewById(R.id.textViewItemToDo);
             checkBox = itemView.findViewById(R.id.checkBox);
+
+            checkBox.setOnClickListener(view ->
+            {
+                if (checkBox.isChecked())
+                {
+                    itemToDo.setPaintFlags(itemToDo.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                }
+                else
+                {
+                    itemToDo.setPaintFlags(itemToDo.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+                }
+            });
         }
     }
 }
