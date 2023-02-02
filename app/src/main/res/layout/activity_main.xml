@@ -7,15 +7,28 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <TextView
+        android:id="@+id/textViewMode"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:background="@color/dark_gray"
+        android:text="@string/app_name"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="34sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/recyclerViewToDo"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/linearLayoutAddItem"
         android:layout_width="match_parent"
-        android:layout_height="65dp"
-        android:background="#252525"
+        android:layout_height="55dp"
+        android:background="@color/dark_gray"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/textViewMode">
 
         <EditText
             android:id="@+id/editTextAddItem"
@@ -42,14 +55,51 @@
             app:strokeWidth="3dp" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/linearLayoutButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="12"
+        android:background="@color/dark_gray"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutAddItem">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonToDo"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/light_gray"
+            android:insetBottom="0dp"
+            app:cornerRadius="0dp"
+            app:icon="@drawable/checklist_icon_white"
+            app:iconGravity="textStart"
+            app:iconTint="@color/white" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonGrocery"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/light_blue"
+            android:insetBottom="0dp"
+            app:cornerRadius="0dp"
+            app:icon="@drawable/shopping_cart_icon_white"
+            app:iconGravity="textStart"
+            app:iconTint="@color/gray" />
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewToDo"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="68dp"
+        android:layout_height="0dp"
         android:background="@color/light_gray"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutButtons" />
 </androidx.constraintlayout.widget.ConstraintLayout>
