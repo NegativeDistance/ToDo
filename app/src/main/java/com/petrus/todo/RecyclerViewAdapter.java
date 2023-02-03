@@ -21,11 +21,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
 {
     private final RecyclerViewInterface recyclerViewInterface;
     Context context;
-    ArrayList<Task> toDoList;
+    ArrayList<Task> arrayListOfItems;
 
     public RecyclerViewAdapter(ArrayList<Task> toDoList, Context context, RecyclerViewInterface recyclerViewInterface)
     {
-        this.toDoList = toDoList;
+        this.arrayListOfItems = toDoList;
         this.context = context;
         this.recyclerViewInterface = recyclerViewInterface;
     }
@@ -45,16 +45,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
     @Override
     public void onBindViewHolder(@NonNull @NotNull RecyclerViewAdapter.MyViewHolder holder, int position)
     {
-        boolean complete = toDoList.get(position).isComplete();
+        boolean complete = arrayListOfItems.get(position).isComplete();
         String completed = holder.itemView.getContext().getString(R.string.date_completed);
 
         //assigning values to the views based on item position
-        holder.itemToDo.setText(toDoList.get(position).getDescription());
-        holder.added.setText(toDoList.get(position).getAddDate());
+        holder.itemToDo.setText(arrayListOfItems.get(position).getDescription());
+        holder.added.setText(arrayListOfItems.get(position).getAddDate());
 
         if (complete)
         {
-            holder.completed.setText(String.format("%s%s", completed, toDoList.get(position).getFinishDate()));
+            holder.completed.setText(String.format("%s%s", completed, arrayListOfItems.get(position).getFinishDate()));
             holder.itemToDo.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
             holder.itemToDo.setTextColor(Color.parseColor("#7C7C7C"));
             holder.added.setTextColor(Color.parseColor("#7C7C7C"));
@@ -74,7 +74,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
     public int getItemCount()
     {
         //number of items to be displayed
-        return toDoList.size();
+        return arrayListOfItems.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder

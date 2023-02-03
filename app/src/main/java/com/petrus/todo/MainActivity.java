@@ -5,11 +5,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
@@ -22,10 +20,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
     TextView textViewTitle;
     Button buttonAdd;
     MaterialButton buttonToDo, buttonGrocery;
-    RecyclerView recyclerViewToDo;
+    RecyclerView recyclerView;
+    RecyclerViewAdapter adapterToDo;
+    RecyclerViewAdapter adapterGrocery;
     ArrayList<Task> arrayToDo = new ArrayList<>();
     ArrayList<Task> arrayGroceries = new ArrayList<>();
-    RecyclerViewAdapter adapter;
+    ArrayList<Task> arrayActive;
     SharedPreferences sharedPreferences;
     String mode;
 
@@ -43,51 +43,66 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
         buttonAdd = findViewById(R.id.buttonAdd);
         buttonToDo = findViewById(R.id.buttonToDo);
         buttonGrocery = findViewById(R.id.buttonGrocery);
-        recyclerViewToDo = findViewById(R.id.recyclerViewToDo);
+        recyclerView = findViewById(R.id.recyclerViewToDo);
 
         arrayToDo = ListLoader.readToDo(this);
         arrayGroceries = ListLoader.readGrocery(this);
-
-        adapter = new RecyclerViewAdapter(arrayToDo, this, this);
-
-        recyclerViewToDo.setAdapter(adapter);
-        recyclerViewToDo.setLayoutManager(new LinearLayoutManager(this));
+        adapterToDo = new RecyclerViewAdapter(arrayToDo, this, this);
+        adapterGrocery = new RecyclerViewAdapter(arrayGroceries, this, this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         modeSelect(mode);
 
         buttonAdd.setOnClickListener(view ->
         {
             Task newItem = new Task(editTextAddItem.getText().toString());
-            arrayToDo.add(newItem);
-            editTextAddItem.setText(null);
-            ListLoader.writeToDo(arrayToDo, getApplicationContext());
-            adapter.notifyDataSetChanged();
+
+            switch(mode)
+            {
+                case "toDo":
+                    arrayToDo.add(newItem);
+                    editTextAddItem.setText(null);
+                    ListLoader.writeToDo(arrayToDo, getApplicationContext());
+                    adapterToDo.notifyDataSetChanged();
+                    break;
+
+                case "grocery":
+                    arrayGroceries.add(newItem);
+                    editTextAddItem.setText(null);
+                    ListLoader.writeGrocery(arrayGroceries, getApplicationContext());
+                    adapterGrocery.notifyDataSetChanged();
+                    break;
+            }
+
         });
 
         buttonToDo.setOnClickListener(view ->
         {
-            modeSelect("toDo");
+            mode = "toDo";
+            modeSelect(mode);
         });
 
         buttonGrocery.setOnClickListener(view ->
         {
-            modeSelect("grocery");
+            mode = "grocery";
+            modeSelect(mode);
         });
     }
 
     @Override
     public void onItemClick(int position)
     {
-        if (!arrayToDo.get(position).isComplete())
+        if (!arrayActive.get(position).isComplete())
         {
-            arrayToDo.get(position).setComplete(true);
+            arrayActive.get(position).setComplete(true);
         }
         else
         {
-            arrayToDo.get(position).setComplete(false);
+            arrayActive.get(position).setComplete(false);
         }
-        ListLoader.writeToDo(arrayToDo, getApplicationContext());
-        adapter.notifyDataSetChanged();
+        ListLoader.writeToDo(arrayActive, getApplicationContext());
+        adapterToDo.notifyDataSetChanged();
+        adapterGrocery.notifyDataSetChanged();
     }
 
     public void modeSelect(String mode)
@@ -98,14 +113,20 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
                 textViewTitle.setText(R.string.app_name);
                 buttonToDo.setIconTintResource(R.color.white);
                 buttonGrocery.setIconTintResource(R.color.gray);
-                recyclerViewToDo.setBackgroundColor(getColor(R.color.light_gray));
+                recyclerView.setBackgroundColor(getColor(R.color.light_gray));
+                recyclerView.setAdapter(adapterToDo);
+
+                arrayActive = arrayToDo;
                 break;
 
             case "grocery":
                 textViewTitle.setText(R.string.groceries);
                 buttonGrocery.setIconTintResource(R.color.white);
                 buttonToDo.setIconTintResource(R.color.gray);
-                recyclerViewToDo.setBackgroundColor(getColor(R.color.light_blue));
+                recyclerView.setBackgroundColor(getColor(R.color.light_blue));
+                recyclerView.setAdapter(adapterGrocery);
+
+                arrayActive = arrayGroceries;
                 break;
         }
     }

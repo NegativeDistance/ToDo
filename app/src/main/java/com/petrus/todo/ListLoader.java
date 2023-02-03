@@ -53,7 +53,7 @@ public class ListLoader
         return toDo;
     }
 
-    public static void writeToGrocery (ArrayList<Task> toDo, Context context)
+    public static void writeGrocery (ArrayList<Task> toDo, Context context)
     {
         try
         {
