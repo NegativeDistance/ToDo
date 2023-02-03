@@ -4,19 +4,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.material.button.MaterialButton;
-
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements RecyclerViewInterface
 {
@@ -72,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
                 arrayActive.add(newItem);
                 editTextAddItem.setText(null);
                 ListLoader.writeList(arrayActive, mode, getApplicationContext());
-                getModeAdapter().notifyDataSetChanged();
+                getModeAdapter().notifyItemInserted(arrayActive.size() - 1);
             }
         });
 
@@ -92,14 +87,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
     @Override
     public void onItemClick(int position)
     {
-        if (!arrayActive.get(position).isComplete())
-        {
-            arrayActive.get(position).setComplete(true);
-        }
-        else
-        {
-            arrayActive.get(position).setComplete(false);
-        }
+        arrayActive.get(position).setComplete(!arrayActive.get(position).isComplete());
         ListLoader.writeList(arrayActive, mode, getApplicationContext());
         getModeAdapter().notifyItemChanged(position);
     }
@@ -111,27 +99,16 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
         alertDelete.setTitle(R.string.delete_item);
         alertDelete.setMessage("Do you want to delete this item?");
         alertDelete.setCancelable(false);
-        alertDelete.setNegativeButton("No", new DialogInterface.OnClickListener()
+        alertDelete.setNegativeButton("No", (dialogInterface, i) -> dialogInterface.cancel());
+        alertDelete.setPositiveButton("Yes", (dialogInterface, i) ->
         {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i)
-            {
-                dialogInterface.cancel();
-            }
-        });
-        alertDelete.setPositiveButton("Yes", new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i)
-            {
-                arrayActive.remove(position);
-                ListLoader.writeList(arrayActive, mode, getApplicationContext());
-                getModeAdapter().notifyItemRemoved(position);
-            }
+            arrayActive.remove(position);
+            ListLoader.writeList(arrayActive, mode, getApplicationContext());
+            getModeAdapter().notifyItemRemoved(position);
         });
 
         AlertDialog alertDialog = alertDelete.create();
-        alertDialog.show();;
+        alertDialog.show();
     }
 
     public void modeSelect(String mode)

@@ -11,8 +11,9 @@
     <TextView
         android:id="@+id/textViewTitle"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:background="@color/dark_gray"
+        android:contentDescription="@string/title"
         android:fontFamily="@font/adamina"
         android:text="@string/app_name"
         android:textAlignment="center"
@@ -71,6 +72,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonToDo"
+            android:contentDescription="@string/app_name"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -83,6 +85,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonGrocery"
+            android:contentDescription="@string/groceries"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
