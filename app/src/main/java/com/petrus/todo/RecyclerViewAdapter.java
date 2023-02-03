@@ -38,6 +38,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
         //Where we inflate the layout (give look to rows)
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.recycler_list_item, parent, false);
+
         return new RecyclerViewAdapter.MyViewHolder(view, recyclerViewInterface);
     }
 
@@ -108,6 +109,24 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
                             recyclerViewInterface.onItemClick(pos);
                         }
                     }
+                }
+            });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener()
+            {
+                @Override
+                public boolean onLongClick(View view)
+                {
+                    if(recyclerViewInterface != null)
+                    {
+                        int pos = getAdapterPosition();
+
+                        if (pos != RecyclerView.NO_POSITION)
+                        {
+                            recyclerViewInterface.onItemLongClick(pos);
+                        }
+                    }
+                    return true;
                 }
             });
         }

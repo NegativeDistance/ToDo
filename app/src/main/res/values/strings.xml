@@ -3,6 +3,7 @@
     <string name="groceries">Groceries</string>
     <string name="add">Add</string>
     <string name="new_item">New List Item</string>
+    <string name="delete_item">Delete Item</string>
     <string name="item_to_do">Item To Do</string>
     <string name="edit_button">Edit Button</string>
     <string name="date_added">Added:\u0020</string>

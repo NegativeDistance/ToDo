@@ -1,18 +1,22 @@
 package com.petrus.todo;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements RecyclerViewInterface
 {
@@ -45,8 +49,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
         buttonGrocery = findViewById(R.id.buttonGrocery);
         recyclerView = findViewById(R.id.recyclerViewToDo);
 
-        arrayToDo = ListLoader.readToDo(this);
-        arrayGroceries = ListLoader.readGrocery(this);
+        arrayToDo = ListLoader.readList("toDo",this);
+        arrayGroceries = ListLoader.readList("grocery",this);
         adapterToDo = new RecyclerViewAdapter(arrayToDo, this, this);
         adapterGrocery = new RecyclerViewAdapter(arrayGroceries, this, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -55,25 +59,21 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
 
         buttonAdd.setOnClickListener(view ->
         {
-            Task newItem = new Task(editTextAddItem.getText().toString());
+            String taskItem = (editTextAddItem.getText().toString());
 
-            switch(mode)
+            if (taskItem.trim().isEmpty())
             {
-                case "toDo":
-                    arrayToDo.add(newItem);
-                    editTextAddItem.setText(null);
-                    ListLoader.writeToDo(arrayToDo, getApplicationContext());
-                    adapterToDo.notifyDataSetChanged();
-                    break;
-
-                case "grocery":
-                    arrayGroceries.add(newItem);
-                    editTextAddItem.setText(null);
-                    ListLoader.writeGrocery(arrayGroceries, getApplicationContext());
-                    adapterGrocery.notifyDataSetChanged();
-                    break;
+                Toast.makeText(MainActivity.this, "Field can not be empty", Toast.LENGTH_LONG).show();
             }
+            else
+            {
+                Task newItem = new Task(taskItem);
 
+                arrayActive.add(newItem);
+                editTextAddItem.setText(null);
+                ListLoader.writeList(arrayActive, mode, getApplicationContext());
+                getModeAdapter().notifyDataSetChanged();
+            }
         });
 
         buttonToDo.setOnClickListener(view ->
@@ -100,9 +100,38 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
         {
             arrayActive.get(position).setComplete(false);
         }
-        ListLoader.writeToDo(arrayActive, getApplicationContext());
-        adapterToDo.notifyDataSetChanged();
-        adapterGrocery.notifyDataSetChanged();
+        ListLoader.writeList(arrayActive, mode, getApplicationContext());
+        getModeAdapter().notifyItemChanged(position);
+    }
+
+    @Override
+    public void onItemLongClick(int position)
+    {
+        AlertDialog.Builder alertDelete = new AlertDialog.Builder(MainActivity.this);
+        alertDelete.setTitle(R.string.delete_item);
+        alertDelete.setMessage("Do you want to delete this item?");
+        alertDelete.setCancelable(false);
+        alertDelete.setNegativeButton("No", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                dialogInterface.cancel();
+            }
+        });
+        alertDelete.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                arrayActive.remove(position);
+                ListLoader.writeList(arrayActive, mode, getApplicationContext());
+                getModeAdapter().notifyItemRemoved(position);
+            }
+        });
+
+        AlertDialog alertDialog = alertDelete.create();
+        alertDialog.show();;
     }
 
     public void modeSelect(String mode)
@@ -129,5 +158,19 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
                 arrayActive = arrayGroceries;
                 break;
         }
+    }
+
+    public RecyclerViewAdapter getModeAdapter()
+    {
+        RecyclerViewAdapter modeAdapter = null;
+        if (mode.equals("toDo"))
+        {
+            modeAdapter = adapterToDo;
+        }
+        else if (mode.equals("grocery"))
+        {
+            modeAdapter = adapterGrocery;
+        }
+        return  modeAdapter;
     }
 }

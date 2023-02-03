@@ -15,11 +15,21 @@ public class ListLoader
     public static final String TODOFILE = "list_items.dat";
     public static final String GROCERYFILE = "grocery_items.dat";
 
-    public static void writeToDo (ArrayList<Task> toDo, Context context)
+    public static void writeList (ArrayList<Task> toDo, String mode, Context context)
     {
+        String fileName = null;
+        switch(mode)
+        {
+            case "toDo":
+                fileName = TODOFILE;
+                break;
+            case "grocery":
+                fileName = GROCERYFILE;
+                break;
+        }
         try
         {
-            FileOutputStream fos = context.openFileOutput(TODOFILE, Context.MODE_PRIVATE);
+            FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(toDo);
             oos.close();
@@ -29,65 +39,37 @@ public class ListLoader
         }
     }
 
-    public static ArrayList<Task> readToDo (Context context)
+    public static ArrayList<Task> readList (String mode, Context context)
     {
-        ArrayList<Task> toDo = null;
+        ArrayList<Task> openedList = null;
+
+        String fileName = null;
+        switch(mode)
+        {
+            case "toDo":
+                fileName = TODOFILE;
+                break;
+            case "grocery":
+                fileName = GROCERYFILE;
+                break;
+        }
 
         try
         {
-            FileInputStream fis = context.openFileInput(TODOFILE);
+            FileInputStream fis = context.openFileInput(fileName);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            toDo = (ArrayList<Task>) ois.readObject();
+            openedList = (ArrayList<Task>) ois.readObject();
             ois.close();
         }
         catch (FileNotFoundException e)
         {
-            toDo = new ArrayList<>();
+            openedList = new ArrayList<>();
             e.printStackTrace();
         }
         catch (IOException | ClassNotFoundException e)
         {
             e.printStackTrace();
         }
-
-        return toDo;
-    }
-
-    public static void writeGrocery (ArrayList<Task> toDo, Context context)
-    {
-        try
-        {
-            FileOutputStream fos = context.openFileOutput(GROCERYFILE, Context.MODE_PRIVATE);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(toDo);
-            oos.close();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    public static ArrayList<Task> readGrocery (Context context)
-    {
-        ArrayList<Task> toDo = null;
-
-        try
-        {
-            FileInputStream fis = context.openFileInput(GROCERYFILE);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            toDo = (ArrayList<Task>) ois.readObject();
-            ois.close();
-        }
-        catch (FileNotFoundException e)
-        {
-            toDo = new ArrayList<>();
-            e.printStackTrace();
-        }
-        catch (IOException | ClassNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-
-        return toDo;
+        return openedList;
     }
 }
